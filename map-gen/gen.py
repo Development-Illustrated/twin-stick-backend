@@ -4,7 +4,7 @@ import operator
 import random
 
 map_height = 50
-map_width = 50
+map_width = 100
 min_path = 10
 max_path = 15
 max_path_iterations = 50
@@ -102,33 +102,34 @@ def cleanup_patchy_grass(level):
                 except IndexError:
                     pass
 
-                if count >= 5:
-                    added_road_count +=1
+                if count >= 3:
+                    added_road_count += 1
                     level[y][x] = road
 
     print("Added road: {}".format(added_road_count))
 
 
-def cleanup(level):
-
+def cleanup_patch_road(level):
+    added_grass_count = 0
     for y in range(map_height):
         for x in range(map_width):
             if level[y][x] == road:
                 count = 0
                 try:
-                    if level[y][x + 1] == grass:
-                        count += 1
-                    if level[y][x - 1] == grass:
-                        count += 1
-                    if level[y + 1][x] == grass:
-                        count += 1
-                    if level[y - 1][x] == grass:
-                        count += 1
+                    for dx in [-1, 1]:
+                        for dy in [-1, 1]:
+                            a = y + dx
+                            b = x + dy
+                            if level[a][b] == grass:
+                                count += 1
                 except IndexError:
                     pass
-                if count >= 2:
-                    print("Removing road")
+
+                if count >= 3:
+                    added_grass_count += 1
                     level[y][x] = grass
+
+    print("Added grass: {}".format(added_grass_count))
 
 
 def get_map_file():
@@ -203,14 +204,28 @@ def main():
     create_rand_path(level1, cx+3, cy, "RIGHT")
     create_rand_path(level1, cx-3, cy, "LEFT")
 
-    cleanup_patchy_grass(level1)
-    # cleanup_road_tiles(level1)
+    for i in range(3):
+        cleanup_patchy_grass(level1)
+        cleanup_patch_road(level1)
 
-    tilemap['layers'][0]["data"] = list(itertools.chain(*level1))
-    with open('/Users/adamprobert/Documents/Projects/twin-stick-shooter/twin-stick-frontend/src/assets/tilesets/horrormap.json', 'w') as fp:
-        json.dump(tilemap, fp)
+    level1 = list(itertools.chain(*level1))
+    level2 = level1
+
+    tilemap['layers'][0]["data"] = level1
+    tilemap['layers'][1]["data"] = level2
+    tilemap['layers'][0]["width"] = map_width
+    tilemap['layers'][0]["height"] = map_height
+    tilemap['layers'][1]["width"] = map_width
+    tilemap['layers'][1]["height"] = map_height
+    tilemap['height'] = map_height
+    tilemap['width'] = map_width
+
+    # with open('/Users/adamprobert/Documents/Projects/twin-stick-shooter/twin-stick-frontend/src/assets/tilesets/horrormap.json', 'w') as fp:
+    #     json.dump(tilemap, fp)
 
     output_array(level1)
+
+    return tilemap
 
 
 if __name__ == '__main__':
