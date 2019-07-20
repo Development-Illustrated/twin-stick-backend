@@ -26,5 +26,5 @@ COPY --from=builder /go/bin/twinstick /go/bin/twinstick
 EXPOSE 8080
 
 # Run it
-ENTRYPOINT ["/go/bin/support-tool-backend"]
+ENTRYPOINT ["/go/bin/twinstick"]
 
