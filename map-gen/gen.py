@@ -9,7 +9,6 @@ min_path = 10
 max_path = 15
 max_path_iterations = 50
 
-
 road = 1
 grass = 89
 road_v_barrier = 10
@@ -181,8 +180,8 @@ def main():
             level1[cy-i][cx-j] = road
             level1[cy+i][cx-j] = road
 
-    level1[cy + 2][cx +2] = road_brc_barrier
-    level1[cy - 2][cx +2 ] = road_trc_barrier
+    level1[cy + 2][cx + 2] = road_brc_barrier
+    level1[cy - 2][cx + 2 ] = road_trc_barrier
     level1[cy + 2][cx - 2 ] = road_blc_barrier
     level1[cy - 2][cx - 2 ] = road_tlc_barrier
     level1[cy - 2][cx-1] = road_brc_barrier
@@ -208,6 +207,17 @@ def main():
         cleanup_patchy_grass(level1)
         cleanup_patch_road(level1)
 
+    # Generate collision map
+    colliders = [[0 for x in range(0, map_width)] for y in range(0, map_height)]
+    for i in range(map_height):
+        for j in range(map_width):
+            if level1[i][j] != grass:
+                colliders[i][j] = 0
+            else:
+                colliders[i][j] = 1
+
+    # Output
+    tilemap['colliders'] = colliders
     level1 = list(itertools.chain(*level1))
     level2 = level1
 
@@ -220,8 +230,9 @@ def main():
     tilemap['height'] = map_height
     tilemap['width'] = map_width
 
-    # with open('/Users/adamprobert/Documents/Projects/twin-stick-shooter/twin-stick-frontend/src/assets/tilesets/horrormap.json', 'w') as fp:
-    #     json.dump(tilemap, fp)
+
+    with open('/Users/adamprobert/Documents/Projects/twin-stick-shooter/twin-stick-frontend/src/assets/tilesets/horrormap.json', 'w') as fp:
+        json.dump(tilemap, fp)
 
     output_array(level1)
 
