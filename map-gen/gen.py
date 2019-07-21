@@ -242,12 +242,13 @@ def main():
                 colliders[i][j] = 1
 
     # Gen level 2
-    level2 = level1
+    level2 = level1.copy()
     level2 = gen_buildings(level2)
 
     # Output
     tilemap['colliders'] = colliders
     level1 = list(itertools.chain(*level1))
+    level2 = list(itertools.chain(*level2))
 
     tilemap['layers'][0]["data"] = level1
     tilemap['layers'][1]["data"] = level2
